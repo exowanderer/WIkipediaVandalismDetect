@@ -21,7 +21,7 @@ def download_kaggle_dataset(dataset_name, path='data'):
     print(f"Dataset '{dataset_name}' downloaded and extracted to '{path}'.")
 
     print("All datasets downloaded successfully.")
-    print(f"Data is stored in {out_dir}")
+    print(f"Data is stored in {path}")
 
 
 def load_dir(data_dir=None, n_files=None):
@@ -39,15 +39,16 @@ def load_dir(data_dir=None, n_files=None):
         raise FileNotFoundError(f"The directory {data_dir} does not exist.")
 
     # Cycle through the directory and load JSON files up until `n_files`
-    print(f"Loading data from {data_dir}...")
-    for k, fname in tqdm(enumerate(os.listdir(data_dir))):
-        if fname.endswith('.jsonl') and (n_files is None or k > n_files):
-            print(f"Loading file: {fname}")
+    # print(f"Loading data from {data_dir}...")
+    # for k, fname in tqdm(enumerate(os.listdir(data_dir))):
+    #     print(fname.endswith('.jsonl') and (n_files is None or k < n_files))
+    #     if fname.endswith('.jsonl') and (n_files is None or k < n_files):
+    #         print(f"Loading file: {fname}")
 
     return {
         fname: load_json_file(os.path.join(data_dir, fname))
         for k, fname in tqdm(enumerate(os.listdir(data_dir)))
-        if fname.endswith('.jsonl') and (n_files is None or k > n_files)
+        if fname.endswith('.jsonl') and (n_files is None or k < n_files)
     }
 
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
         download_kaggle_dataset(dataset_name=dataset, path=data_dir)
 
     # Load the data
-    n_files = 10  # Number of files to load, set to None to load all
+    n_files = 1  # Number of files to load, set to None to load all
     loaded_data = {}
     for lang_dir in output_data:
         if lang_dir not in loaded_data:
@@ -105,6 +106,13 @@ if __name__ == "__main__":
 
         # If the directory exists and is a directory, load the data
         if langdir_exists and langdir_isdir:
-            loaded_data[lang_dir] = load_dir(data_dir=dirlang, n_files=n_files)
+            print(f"Loading data from {dirlang}...")
+            if lang_dir not in loaded_data:
+                loaded_data[lang_dir] = {}
+            if not len(loaded_data[lang_dir]):
+                loaded_data[lang_dir] = load_dir(
+                    data_dir=dirlang,
+                    n_files=n_files
+                )
         else:
             print(f"Directory {dirlang} does not exist or is not a directory.")
