@@ -69,6 +69,40 @@ def load_json_file(json_filename=None):
         return [json.loads(line) for line in json_in]
 
 
+def identify_missing_keys(loaded_data):
+    """
+    Identifies missing keys in the loaded data.
+
+    Parameters:
+    - loaded_data: dict, the loaded data from the JSON files.
+
+    Returns:
+    - A set of missing keys (set), set of all keys (set)
+    """
+
+    set_of_keys = set()
+    for _lang in loaded_data.keys():
+        for filename in loaded_data[_lang].keys():
+            for entry in loaded_data[_lang][filename]:
+                set_of_keys.update(entry.keys())
+
+    # Identify missing keys
+    # missing_keys = set()
+    # for key in set_of_keys:
+    #     if not any(key in item for item in loaded_data.values()):
+    #         missing_keys.add(key)
+
+    missing_keys = set()
+    for _lang in loaded_data.keys():
+        for filename in loaded_data[_lang].keys():
+            for entry in loaded_data[_lang][filename]:
+                missing_keys.update(
+                    [key for key in set_of_keys if key not in entry.keys()]
+                )
+
+    return set_of_keys, missing_keys
+
+
 if __name__ == "__main__":
 
     output_data = ['enwiki_namespace_0', 'frwiki_namespace_0']
@@ -116,3 +150,5 @@ if __name__ == "__main__":
                 )
         else:
             print(f"Directory {dirlang} does not exist or is not a directory.")
+
+    set_of_keys, missing_keys = identify_missing_keys(loaded_data)
