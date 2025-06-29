@@ -109,6 +109,13 @@ def load_all_data(data_dir=None, dir_lang_options=None, n_files=None):
         else:
             print(f"Directory {dirlang} does not exist or is not a directory.")
 
+    print(
+        f"Loaded data: {len(loaded_data)} languages "
+        f"with {sum(len(v) for v in loaded_data.values())} files."
+    )
+    print(f"Data loaded successfully from {data_dir}.")
+
+    # Return the loaded data
     return loaded_data
 
 
@@ -137,13 +144,16 @@ def identify_missing_keys(loaded_data):
                     [key for key in set_of_keys if key not in entry.keys()]
                 )
 
+    print(f"Set of keys: {set_of_keys}")
+    print(f"Missing keys: {missing_keys}")
+
     return set_of_keys, missing_keys
 
 
 if __name__ == "__main__":
 
     lang_options = ['en', 'fr']
-    dir_lang_options = [f"{lang}_wiki_namespace_0" for lang in lang_options]
+    dir_lang_options = [f"{lang}wiki_namespace_0" for lang in lang_options]
     dataset = "wikimedia-foundation/wikipedia-structured-contents"
     data_dir = "data"
 
@@ -167,4 +177,5 @@ if __name__ == "__main__":
         n_files=n_files
     )
 
+    # Identify keys and partially missing keys
     set_of_keys, missing_keys = identify_missing_keys(loaded_data)
