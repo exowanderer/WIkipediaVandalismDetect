@@ -34,15 +34,22 @@ def load_dir(data_dir=None, n_files=None):
     Returns:
     - List of data files in the directory.
     """
+    print(data_dir)
     if data_dir and not os.path.exists(data_dir):
         raise FileNotFoundError(f"The directory {data_dir} does not exist.")
 
     # Cycle through the directory and load JSON files up until `n_files`
+    print(f"Loading data from {data_dir}...")
+    for k, fname in tqdm(enumerate(os.listdir(data_dir))):
+        if fname.endswith('.jsonl') and (n_files is None or k > n_files):
+            print(f"Loading file: {fname}")
+
     return {
         fname: load_json_file(os.path.join(data_dir, fname))
-        for k, fname in tqdm(enumerate(os.listdir(data_dir)[:n_files]))
+        for k, fname in tqdm(enumerate(os.listdir(data_dir)))
         if fname.endswith('.jsonl') and (n_files is None or k > n_files)
     }
+
 
 def load_json_file(json_filename=None):
     """
@@ -65,19 +72,28 @@ if __name__ == "__main__":
 
     output_data = ['enwiki_namespace_0', 'frwiki_namespace_0']
     dataset = "wikimedia-foundation/wikipedia-structured-contents"
-    out_dir = "data"
+    data_dir = "data"
 
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
-        print(f"Output directory created at {out_dir}.")
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+        print(f"Output directory created at {data_dir}.")
 
-    data_exists = True in [os.path.exists(_data_dir) for _data_dir in output_data]
+    data_exists = [os.path.exists(_data_dir) for _data_dir in output_data]
+    data_exists = True in data_exists
 
     if not data_exists:
         print("Data already exists, skipping download.")
     elif input('Should we start the download [y/n]: ').strip().lower() == 'y':
-        download_kaggle_dataset(dataset_name=dataset, path=out_dir)
+        download_kaggle_dataset(dataset_name=dataset, path=data_dir)
 
     # Load the data
     n_files = 10  # Number of files to load, set to None to load all
-    data = load_dir(data_dir=out_dir, n_files=n_files)
+    loaded_data = []
+    for lang_dir in output_data:
+        dirlang = os.path.join(data_dir, lang_dir)
+        langdir_exists = os.path.exists(dirlang)
+        langdir_isdir = os.path.isdir(dirlang)
+        if langdir_exists and langdir_isdir:
+            loaded_data.append(load_dir(data_dir=dirlang, n_files=n_files))
+
+    # data = load_dir(data_dir=data_dir, n_files=n_files)
