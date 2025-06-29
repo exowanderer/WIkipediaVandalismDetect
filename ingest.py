@@ -88,12 +88,20 @@ if __name__ == "__main__":
 
     # Load the data
     n_files = 10  # Number of files to load, set to None to load all
-    loaded_data = []
+    loaded_data = {}
     for lang_dir in output_data:
+        if lang_dir not in loaded_data:
+            loaded_data[lang_dir] = {}
+
+        # Check if the directory exists and is a directory
         dirlang = os.path.join(data_dir, lang_dir)
         langdir_exists = os.path.exists(dirlang)
         langdir_isdir = os.path.isdir(dirlang)
+        print(
+            f"Checking directory: {dirlang} "
+            f"(Exists: {langdir_exists}, IsDir: {langdir_isdir})"
+        )
         if langdir_exists and langdir_isdir:
-            loaded_data.append(load_dir(data_dir=dirlang, n_files=n_files))
+            loaded_data[lang_dir] = load_dir(data_dir=dirlang, n_files=n_files)
 
     # data = load_dir(data_dir=data_dir, n_files=n_files)
