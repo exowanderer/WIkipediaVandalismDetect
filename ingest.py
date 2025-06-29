@@ -2,6 +2,8 @@ import json
 import kaggle
 import os
 
+from tqdm import tqdm
+
 def download_kaggle_dataset(dataset_name, path='data'):
     """
     Downloads a Kaggle dataset to the specified path.
@@ -38,7 +40,7 @@ def load_dir(data_dir=None, n_files=None):
     # Cycle through the directory and load JSON files up until `n_files`
     return {
         fname: load_json_file(os.path.join(data_dir, fname))
-        for k, fname in enumerate(os.listdir(data_dir)[:n_files])
+        for k, fname in tqdm(enumerate(os.listdir(data_dir)[:n_files]))
         if fname.endswith('.jsonl') and (n_files is None or k > n_files)
     }
 
@@ -55,7 +57,6 @@ def load_json_file(json_filename=None):
     if json_filename and not os.path.exists(json_filename):
         raise FileNotFoundError(f"The file {json_filename} does not exist.")
 
-    json_filename = 'data/enwiki_namespace_0/enwiki_namespace_0_37.jsonl'
     with open(json_filename) as json_in:
         return [json.loads(line) for line in json_in]
 
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
         print(f"Output directory created at {out_dir}.")
+
     data_exists = True in [os.path.exists(_data_dir) for _data_dir in output_data]
 
     if not data_exists:
@@ -76,3 +78,6 @@ if __name__ == "__main__":
     elif input('Should we start the download [y/n]: ').strip().lower() == 'y':
         download_kaggle_dataset(dataset_name=dataset, path=out_dir)
 
+    # Load the data
+    n_files = 10  # Number of files to load, set to None to load all
+    data = load_dir(data_dir=out_dir, n_files=n_files)
