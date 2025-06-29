@@ -1,8 +1,23 @@
 import json
-import kaggle
 import os
 
-from tqdm import tqdm
+try:
+    import kaggle
+except ImportError:
+    raise ImportError(
+        "Kaggle API is not installed. "
+        "Please install it using 'pip install kaggle'. "
+        "Also, ensure you have your Kaggle API credentials set up correctly."
+        "Refer to https://www.kaggle.com/docs/api for more details."
+    )
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    raise ImportError(
+        "tqdm is not installed. "
+        "Please install it using 'pip install tqdm'."
+    )
 
 def download_kaggle_dataset(dataset_name, path='data'):
     """
@@ -13,6 +28,7 @@ def download_kaggle_dataset(dataset_name, path='data'):
 
 
     """
+
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -55,6 +71,7 @@ def load_json_file(json_filename=None):
     Returns:
     - List of data files in the directory.
     """
+    # TODO: Add error handling for file not found
     if json_filename and not os.path.exists(json_filename):
         raise FileNotFoundError(f"The file {json_filename} does not exist.")
 
