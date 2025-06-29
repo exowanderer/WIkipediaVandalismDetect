@@ -97,11 +97,14 @@ if __name__ == "__main__":
         dirlang = os.path.join(data_dir, lang_dir)
         langdir_exists = os.path.exists(dirlang)
         langdir_isdir = os.path.isdir(dirlang)
+
         print(
             f"Checking directory: {dirlang} "
             f"(Exists: {langdir_exists}, IsDir: {langdir_isdir})"
         )
+
+        # If the directory exists and is a directory, load the data
         if langdir_exists and langdir_isdir:
             loaded_data[lang_dir] = load_dir(data_dir=dirlang, n_files=n_files)
-
-    # data = load_dir(data_dir=data_dir, n_files=n_files)
+        else:
+            print(f"Directory {dirlang} does not exist or is not a directory.")
