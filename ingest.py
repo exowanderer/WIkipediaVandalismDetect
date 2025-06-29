@@ -62,7 +62,7 @@ def load_json_file(json_filename=None):
         return [json.loads(line) for line in json_in]
 
 
-def load_all_data(data_dir=None, lang_options=None, n_files=None):
+def load_all_data(data_dir=None, dir_lang_options=None, n_files=None):
     """
     Loads all data from the specified directory.
 
@@ -76,11 +76,13 @@ def load_all_data(data_dir=None, lang_options=None, n_files=None):
     if not data_dir or not os.path.exists(data_dir):
         raise FileNotFoundError(f"The directory {data_dir} does not exist.")
 
-    if not lang_options or not isinstance(lang_options, list):
-        raise ValueError("lang_options must be a list of language directories.")
+    if not dir_lang_options or not isinstance(dir_lang_options, list):
+        raise ValueError(
+            "dir_lang_options must be a list of language directories."
+        )
 
     loaded_data = {}
-    for lang_dir in lang_options:
+    for lang_dir in dir_lang_options:
         if lang_dir not in loaded_data:
             loaded_data[lang_dir] = {}
 
@@ -140,7 +142,8 @@ def identify_missing_keys(loaded_data):
 
 if __name__ == "__main__":
 
-    lang_options = ['enwiki_namespace_0', 'frwiki_namespace_0']
+    lang_options = ['en', 'fr']
+    dir_lang_options = [f"{lang}_wiki_namespace_0" for lang in lang_options]
     dataset = "wikimedia-foundation/wikipedia-structured-contents"
     data_dir = "data"
 
@@ -148,7 +151,7 @@ if __name__ == "__main__":
         os.makedirs(data_dir)
         print(f"Output directory created at {data_dir}.")
 
-    data_exists = [os.path.exists(_data_dir) for _data_dir in lang_options]
+    data_exists = [os.path.exists(_data_dir) for _data_dir in dir_lang_options]
     data_exists = True in data_exists
 
     if not data_exists:
@@ -160,7 +163,7 @@ if __name__ == "__main__":
     n_files = 1  # Number of files to load, set to None to load all
     loaded_data = load_all_data(
         data_dir=data_dir,
-        lang_options=lang_options,
+        dir_lang_options=dir_lang_options,
         n_files=n_files
     )
 
